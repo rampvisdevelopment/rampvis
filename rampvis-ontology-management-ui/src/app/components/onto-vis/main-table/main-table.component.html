@@ -1,0 +1,139 @@
+<div class="row" *ngIf="editable">
+  <mat-form-field class="pull-left mt-1 col-md-4">
+    <input
+      (keyup)="filterDataSource()"
+      [(ngModel)]="filterTerm"
+      matInput
+      name="search"
+      placeholder="Filter..."
+      type="text"
+    />
+  </mat-form-field>
+
+  <div class="pull-right mt-1 col-md-8">
+    <button (click)="onClickCreate.emit()" class="btn btn-primary btn-round btn-fab float-right card-btn" mat-mini-fab>
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>
+
+<table
+  [dataSource]="dataSource"
+  mat-table
+  matSort
+  matSortActive="created"
+  matSortDirection="desc"
+  matSortDisableClear="true"
+>
+
+  <ng-container matColumnDef="function">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Function</th>
+    <td *matCellDef="let row" mat-cell>{{ row.function }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="type">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Type</th>
+    <td *matCellDef="let row" mat-cell>
+      <mat-chip-list>
+        <mat-chip *ngIf="row.type">{{ row.type }}</mat-chip>
+      </mat-chip-list>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="dataTypes">
+    <th *matHeaderCellDef mat-header-cell>Data Type</th>
+    <td *matCellDef="let row" mat-cell>
+      <mat-chip-list>
+        <mat-chip *ngFor="let d of row.dataTypes">
+          {{ d }}
+        </mat-chip>
+      </mat-chip-list>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Description</th>
+    <td *matCellDef="let row" mat-cell>{{ row.description }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th *matHeaderCellDef class="text-center actions" mat-header-cell>Actions</th>
+
+    <td *matCellDef="let row" class="td-actions text-center text-nowrap" mat-cell>
+      <button
+        cdkCopyToClipboard="{{ row.id }}"
+        [matTooltipPosition]="'left'"
+        class="btn btn-light btn-link"
+        mat-icon-button
+        matTooltip="Copy to clipboard"
+        type="button"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+
+      <button
+        *ngIf="editable"
+        (click)="onClickEdit.emit(row)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-warning btn-link"
+        mat-icon-button
+        matTooltip="Edit/Update"
+        type="button"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button
+        *ngIf="editable"
+        (click)="onClickDelete.emit(row)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-danger btn-link"
+        mat-icon-button
+        matTooltip="Remove row"
+        type="button"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <!-- Selection Column -->
+  <ng-container matColumnDef="select">
+    <th mat-header-cell *matHeaderCellDef class="text-center actions">
+      <!-- Select all row -->
+      <mat-checkbox
+        [hidden]= "!selectable"
+        (change)="$event ? masterToggle() : null"
+        [checked]="selection.hasValue() && isAllSelected()"
+        [indeterminate]="selection.hasValue() && !isAllSelected()"
+      >
+      </mat-checkbox>
+    </th>
+    <td mat-cell *matCellDef="let row" class="td-actions text-center text-nowrap" mat-cell>
+      <mat-checkbox
+        *ngIf="selectable"
+        (click)="$event.stopPropagation()"
+        (change)="$event ? selection.toggle(row) : null"
+        [checked]="selection.isSelected(row)"
+      >
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <tr *matHeaderRowDef="tableData.headerRow" mat-header-row></tr>
+  <tr *matRowDef="let row; columns: tableData.headerRow" mat-row></tr>
+</table>
+
+<div *ngIf="spinner">
+  <mat-progress-spinner color="primary" diameter="80" mode="indeterminate">
+  </mat-progress-spinner>
+</div>
+
+<mat-paginator
+  [hidden]="!editable"
+  [length]="length"
+  [pageSizeOptions]="[100, 200, 500]"
+  [pageSize]="100"
+  showFirstLastButtons
+>
+</mat-paginator>

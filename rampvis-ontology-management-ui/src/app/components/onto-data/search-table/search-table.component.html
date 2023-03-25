@@ -1,0 +1,168 @@
+<div class="row">
+  <mat-form-field *ngIf="searchable" class="pull-left mt-1 col-md-2">
+    <input
+      matInput
+      (keyup)="filterDataSource()"
+      [(ngModel)]="filterTerm"
+      type="text"
+      name="search"
+      placeholder="Filter ..."
+    />
+  </mat-form-field>
+</div>
+
+<table
+  [dataSource]="dataSource"
+  mat-table
+  matSort
+  matSortActive="score"
+  matSortDirection="desc"
+  matSortDisableClear="true"
+>
+  <ng-container matColumnDef="score">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Score</th>
+    <td *matCellDef="let row" mat-cell>{{ row.score | number : '.2-3' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="endpoint">
+    <th *matHeaderCellDef mat-header-cell>Endpoint</th>
+    <td *matCellDef="let row" mat-cell>{{ row.urlCode }}{{ row.endpoint | truncate: "75" }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Description</th>
+    <td *matCellDef="let row" mat-cell>{{ row.description | truncate: "50" }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="dataType">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Type</th>
+    <td *matCellDef="let row" mat-cell>
+      <mat-chip-list>
+        <mat-chip *ngIf="row.dataType">{{ row.dataType }}</mat-chip>
+      </mat-chip-list>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="keywords">
+    <th *matHeaderCellDef mat-header-cell>Keywords</th>
+    <td *matCellDef="let row" mat-cell>
+      <mat-chip-list>
+        <mat-chip *ngFor="let d of row.keywords">{{ d }}</mat-chip>
+      </mat-chip-list>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Date</th>
+    <td *matCellDef="let row" mat-cell>{{ row.date | date: "short" }}</td>
+  </ng-container>
+
+
+  <!-- Existing binding information -->
+  <ng-container matColumnDef="binding">
+    <th *matHeaderCellDef mat-header-cell [hidden]="!showBindings">Existing Bindings</th>
+    <td *matCellDef="let row" mat-cell [hidden]="!showBindings">
+      <div class="align-centered-flex">
+        <!-- <div *ngIf="row.pageIds?.length" class="text-in-dot" style="background: orange">{{ row.pageIds?.length }}</div> -->
+        <div *ngFor="let d of row.pageIds">
+          <button
+            (click)="onClickShowBindings(d)"
+            [matTooltipPosition]="'left'"
+            class="btn btn-danger btn-link"
+            mat-icon-button
+            matTooltip="Show bindings"
+            type="button"
+          >
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </td>
+  </ng-container>
+
+
+  <!-- Action Column -->
+  <ng-container matColumnDef="actions">
+    <th *matHeaderCellDef class="text-center actions" mat-header-cell>Actions</th>
+    <td *matCellDef="let row" class="td-actions text-center text-nowrap" mat-cell>
+      <button
+        cdkCopyToClipboard="{{ row.id }}"
+        [matTooltipPosition]="'left'"
+        class="btn btn-light btn-link"
+        mat-icon-button
+        matTooltip="Copy to clipboard"
+        type="button"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+
+      <button
+        (click)="onClickViewData(row)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-primary btn-link"
+        mat-icon-button
+        matTooltip="View"
+        type="button"
+      >
+        <mat-icon>grid_on</mat-icon>
+      </button>
+
+      <button
+      (click)="onClickAddToBasket.emit(row)"
+      [matTooltipPosition]="'left'"
+      class="btn btn-primary btn-link"
+      mat-icon-button
+      matTooltip="Add to basket"
+      type="button"
+    >
+      <mat-icon>check</mat-icon>
+    </button>
+
+    </td>
+  </ng-container>
+
+  <!-- Selection checkbox -->
+  <ng-container matColumnDef="select">
+    <th *matHeaderCellDef class="text-center actions" mat-header-cell>
+      <!-- Select all row -->
+      <mat-checkbox
+        [hidden]="!selectable"
+        (change)="$event ? masterToggle() : null"
+        [checked]="selection.hasValue() && isAllSelected()"
+        [indeterminate]="selection.hasValue() && !isAllSelected()"
+      >
+      </mat-checkbox>
+    </th>
+    <td *matCellDef="let row" class="td-actions text-center text-nowrap" mat-cell>
+      <!-- Select row -->
+      <mat-checkbox
+        *ngIf="selectable"
+        (click)="$event.stopPropagation()"
+        (change)="$event ? selection.toggle(row) : null"
+        [checked]="selection.isSelected(row)"
+      >
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <tr *matHeaderRowDef="tableData.headerRow" mat-header-row></tr>
+  <tr *matRowDef="let row; columns: tableData.headerRow" mat-row></tr>
+</table>
+
+<div *ngIf="spinner"  class="spinner-background">
+  <mat-progress-spinner
+    class="progress-spinner-container"
+    color="primary"
+    diameter="60"
+    mode="indeterminate"
+  >
+  </mat-progress-spinner>
+</div>
+
+<mat-paginator
+  [length]="length"
+  [pageSizeOptions]="[25, 50, 100, 150, 200]"
+  [pageSize]="25"
+  showFirstLastButtons
+>
+</mat-paginator>

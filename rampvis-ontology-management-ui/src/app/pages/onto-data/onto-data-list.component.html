@@ -1,0 +1,28 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <div class="card">
+      <div class="card-header card-header-primary card-header-icon">
+        <div class="card-icon">
+          <mat-icon>storage</mat-icon>
+        </div>
+        <h4 class="card-title">Data</h4>
+      </div>
+
+      <div class="card-body">
+        <app-onto-data-main-table
+          [data]="ontoDataArr"
+          [length]="ontoDataTotalCount"
+          (onClickCreate)="onClickAdd()"
+          (onClickEdit)="onClickEdit($event)"
+          (onClickDelete)="onClickDelete($event)"
+          (fetchFilteredData)="filterOntoData($event)"
+        >
+        </app-onto-data-main-table>
+
+      </div>
+      <!-- end card-body-->
+    </div>
+    <!--  end card  -->
+  </div>
+</div>

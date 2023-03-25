@@ -1,0 +1,73 @@
+<h5 mat-dialog-title>{{ dialogType | titlecase }}</h5>
+
+<mat-dialog-content>
+  <form [formGroup]="formGroup" #modalForm>
+
+    <ng-select
+      [items]="ontoVis$ | async"
+      bindLabel="function"
+      bindValue="id"
+      [multiple]="false"
+      [closeOnSelect]="true"
+      [searchable]="true"
+      formControlName="visId"
+      placeholder="VIS function"
+    >
+    </ng-select>
+
+    <ng-select
+      [items]="ontoData$ | async"
+      bindLabel="endpoint"
+      bindValue="id"
+      [multiple]="true"
+      [closeOnSelect]="false"
+      [searchable]="true"
+      formControlName="dataIds"
+      placeholder="Data streams"
+    >
+    </ng-select>
+
+    <ng-select
+      [items]="ontoPages$ | async"
+      bindLabel="name"
+      bindValue="id"
+      [multiple]="true"
+      [closeOnSelect]="false"
+      [searchable]="true"
+      formControlName="pageIds"
+      placeholder="Links"
+    >
+    </ng-select>
+
+    <label id="radio-group-id">Page binding type</label>
+    <mat-radio-group
+      formControlName="pageType"
+      aria-labelledby="radio-group-id"
+      class="pagetype-radio-group"
+    >
+      <mat-radio-button *ngFor="let d of pageTypes" [value]="d" class="pagetype-radio-button" >
+        <span class="wrap-label-text">{{ d | titlecase }}</span>
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <mat-dialog-actions align="end">
+      <button
+        mat-raised-button
+        class="btn btn-warning"
+        [mat-dialog-close]="undefined"
+      >
+        Cancel
+      </button>
+
+      <button
+        mat-raised-button
+        class="btn btn-primary"
+        (click)="save()"
+        [disabled]="!formGroup.valid"
+        type="submit"
+        >
+          Save
+        </button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>

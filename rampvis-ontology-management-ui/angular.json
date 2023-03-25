@@ -1,0 +1,163 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "rampvis-ontology": {
+            "root": "",
+            "sourceRoot": "src",
+            "projectType": "application",
+            "prefix": "app",
+            "schematics": {},
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist",
+                        "index": "src/index.html",
+                        "main": "src/main.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "tsconfig.app.json",
+                        "assets": [
+                            {
+                                "glob": "_redirects",
+                                "input": "src",
+                                "output": "/"
+                            },
+                            "src/favicon.ico",
+                            "src/assets",
+                            "src/firebase-messaging-sw.js",
+                            "src/manifest.json"
+                        ],
+                        "styles": [
+                            "node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
+                            "node_modules/angular-calendar/scss/angular-calendar.scss",
+                            "node_modules/sweetalert2/src/sweetalert2.scss",
+                            "src/assets/scss/material-dashboard.scss",
+                            "src/styles.scss"
+                        ],
+                        "scripts": [
+                            "node_modules/jquery/dist/jquery.js",
+                            "node_modules/popper.js/dist/umd/popper.js",
+                            "node_modules/bootstrap-material-design/dist/js/bootstrap-material-design.min.js",
+                            "node_modules/moment/moment.js",
+                            "node_modules/arrive/src/arrive.js",
+                            "node_modules/web-animations-js/web-animations.min.js",
+                            "node_modules/twitter-bootstrap-wizard/jquery.bootstrap.wizard.js",
+                            "node_modules/bootstrap-notify/bootstrap-notify.js",
+                            "node_modules/nouislider/distribute/nouislider.min.js",
+                            "node_modules/bootstrap-select/dist/js/bootstrap-select.js",
+                            "node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js",
+                            "node_modules/jasny-bootstrap/dist/js/jasny-bootstrap.min.js",
+                            "node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js",
+                            "node_modules/jqvmap/dist/jquery.vmap.min.js",
+                            "node_modules/jqvmap/dist/maps/jquery.vmap.world.js",
+                            "node_modules/jquery-validation/dist/jquery.validate.min.js"
+                        ],
+                        "aot": false,
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "4mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "2kb",
+                                    "maximumError": "4kb"
+                                }
+                            ]
+                        }
+                    },
+                    "defaultConfiguration": ""
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "rampvis-ontology:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "rampvis-ontology:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "rampvis-ontology:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "src/test.ts",
+                        "polyfills": "src/polyfills.ts",
+                        "tsConfig": "tsconfig.spec.json",
+                        "karmaConfig": "karma.conf.js",
+                        "styles": [
+                            "node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
+                            "node_modules/angular-calendar/scss/angular-calendar.scss",
+                            "node_modules/sweetalert2/src/sweetalert2.scss",
+                            "src/assets/scss/material-dashboard.scss",
+                            "src/styles.scss"
+                        ],
+                        "scripts": [
+                            "node_modules/jquery/dist/jquery.js",
+                            "node_modules/popper.js/dist/umd/popper.js",
+                            "node_modules/bootstrap-material-design/dist/js/bootstrap-material-design.min.js",
+                            "node_modules/moment/moment.js",
+                            "node_modules/arrive/src/arrive.js",
+                            "node_modules/web-animations-js/web-animations.min.js",
+                            "node_modules/chartist/dist/chartist.js",
+                            "node_modules/chartist-plugin-zoom/dist/chartist-plugin-zoom.js",
+                            "node_modules/twitter-bootstrap-wizard/jquery.bootstrap.wizard.js",
+                            "node_modules/bootstrap-notify/bootstrap-notify.js",
+                            "node_modules/nouislider/distribute/nouislider.min.js",
+                            "node_modules/bootstrap-select/dist/js/bootstrap-select.js",
+                            "node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js",
+                            "node_modules/jasny-bootstrap/dist/js/jasny-bootstrap.min.js",
+                            "node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js",
+                            "node_modules/jqvmap/dist/jquery.vmap.min.js",
+                            "node_modules/jqvmap/dist/maps/jquery.vmap.world.js",
+                            "node_modules/jquery-validation/dist/jquery.validate.min.js"
+                        ],
+                        "assets": ["src/favicon.ico", "src/assets"]
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
+                        "exclude": ["**/node_modules/**"]
+                    }
+                }
+            }
+        }
+    },
+    "defaultProject": "rampvis-ontology",
+    "cli": {
+        "analytics": false
+    }
+}

@@ -1,0 +1,61 @@
+<h5 mat-dialog-title>{{ dialogType | titlecase }} Data</h5>
+
+<mat-dialog-content>
+  <form [formGroup]="formGroup" #modalForm>
+    <mat-form-field>
+      <mat-select formControlName="urlCode" placeholder="Server URL Code">
+        <mat-option *ngFor="let d of urlCodes" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Endpoint</mat-label>
+      <input formControlName="endpoint" matInput />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select formControlName="dataType" placeholder="Data Type">
+        <mat-option [value]="null"></mat-option>
+        <mat-option *ngFor="let d of dataTypes" [value]="d">{{ d }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <input formControlName="description" matInput />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Keywords</mat-label>
+      <mat-chip-list #keywordsId aria-label="">
+        <mat-chip
+          *ngFor="let d of formGroup.get('keywords')?.value"
+          [selectable]="false"
+          [removable]="true"
+          (removed)="removeKeyword(d)"
+          color="primary"
+        >
+          {{ d }}
+          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+        </mat-chip>
+        <input
+          placeholder="..."
+          #keywordInput1
+          formControlName="keyword"
+          [matChipInputFor]="keywordsId"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addKeyword($event)"
+        />
+      </mat-chip-list>
+    </mat-form-field>
+
+    <!-- <small>Selected: {{formGroup.get('keywords')?.value | json}}</small> -->
+
+    <mat-dialog-actions align="end">
+      <button mat-raised-button class="btn btn-warning" [mat-dialog-close]="undefined">Cancel</button>
+      <button mat-raised-button class="btn btn-primary" (click)="save()" [disabled]="!formGroup.valid" type="submit">
+        Save
+      </button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>

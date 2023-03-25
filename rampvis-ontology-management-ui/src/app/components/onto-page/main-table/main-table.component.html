@@ -1,0 +1,173 @@
+<div class="row" *ngIf="isEditable">
+  <mat-form-field class="pull-left mt-1 col-md-4">
+    <input
+      [(ngModel)]="keyword"
+      (keyup)="filterTerm$.next(keyword)"
+      matInput
+      name="search"
+      placeholder="Filter by ID..."
+      type="text"
+    />
+  </mat-form-field>
+
+  <div class="pull-right mt-1 col-md-8">
+    <button (click)="onClickCreate.emit()" class="btn btn-primary btn-round btn-fab float-right card-btn" mat-mini-fab>
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>
+
+<table
+  [dataSource]="tableDataSource"
+  mat-table
+  matSort
+  matSortActive="date"
+  matSortDirection="desc"
+  matSortDisableClear="true"
+  multiTemplateDataRows
+>
+
+  <ng-container matColumnDef="link">
+    <th *matHeaderCellDef mat-header-cell>Link</th>
+    <td *matCellDef="let row" mat-cell>
+
+      <button
+        (click)="onClickNavigatePage(row.id)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-primary btn-link"
+        mat-icon-button
+        matTooltip="{{visURL}}{{row.id}}"
+        type="button"
+      >
+        <mat-icon>link</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Date</th>
+    <td *matCellDef="let row" mat-cell>{{ row.date | date: "short" }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="function">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>VIS</th>
+    <td *matCellDef="let row" mat-cell>{{ row?.vis?.function }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header>Data [0]</th>
+    <td *matCellDef="let row" mat-cell>{{ row?.data[0]?.description }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="numDataStreams">
+    <th *matHeaderCellDef mat-header-cell>Data Streams</th>
+    <td *matCellDef="let row" mat-cell>
+      <div class="text-in-dot" style="background: #bb6d0e">{{ row.dataIds.length }}</div>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="numLinks">
+    <th *matHeaderCellDef mat-header-cell>Links</th>
+    <td *matCellDef="let row" mat-cell>
+      <div *ngIf="row.pageIds?.length" class="text-in-dot" style="background:green">{{ row.pageIds?.length }}</div>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th *matHeaderCellDef class="text-center actions" mat-header-cell>Actions</th>
+    <td *matCellDef="let row" class="td-actions text-center text-nowrap" mat-cell>
+
+      <button
+        cdkCopyToClipboard="{{ row.id }}"
+        [matTooltipPosition]="'left'"
+        class="btn btn-light btn-link"
+        mat-icon-button
+        matTooltip="Copy to clipboard"
+        type="button"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+
+      <button
+        (click)="onClickEdit.emit(row)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-warning btn-link"
+        mat-icon-button
+        matTooltip="Edit"
+        type="button"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button
+        (click)="onClickDelete.emit(row.id)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-danger btn-link"
+        mat-icon-button
+        matTooltip="Remove"
+        type="button"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <button
+        *ngIf="isBindingTypeReview()"
+        (click)="onClickRelease.emit(row.id)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-success btn-link"
+        mat-icon-button
+        matTooltip="Release"
+        type="button"
+      >
+        <mat-icon>check_circle</mat-icon>
+      </button>
+
+      <button
+        (click)="row.isExpanded = !row.isExpanded"
+        [matTooltipPosition]="'left'"
+        class="btn btn-primary btn-link"
+        mat-icon-button
+        matTooltip="Expand or collapse"
+        type="button"
+      >
+        <mat-icon *ngIf="!row.isExpanded">expand_more</mat-icon>
+        <mat-icon *ngIf="row.isExpanded">expand_less</mat-icon>
+      </button>
+
+      <button
+        (click)="onClickShowBinding.emit(row.id)"
+        [matTooltipPosition]="'left'"
+        class="btn btn-primary btn-link"
+        mat-icon-button
+        matTooltip="Show binding"
+        type="button"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+
+    </td>
+  </ng-container>
+
+  <!-- Template for details row -->
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let row" [attr.colspan]="tableData.headerRow.length">
+      <div class="" [@detailExpand]="row.isExpanded ? 'expanded' : 'collapsed'">
+        <mat-card>
+          <app-onto-vis-table-b [data]="[row.vis]"> </app-onto-vis-table-b>
+          <app-onto-data-group [data]="row.data"> </app-onto-data-group>
+        </mat-card>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="tableData.headerRow"></tr>
+  <tr mat-row *matRowDef="let row; columns: tableData.headerRow" style="border-bottom-style: hidden"></tr>
+  <!-- Extra row to show detail content column -->
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="bindings-detail-row"></tr>
+</table>
+
+<div *ngIf="spinner">
+  <mat-progress-spinner color="primary" diameter="100" mode="indeterminate"> </mat-progress-spinner>
+</div>
+<mat-paginator [length]="totalCount" [pageSizeOptions]="[100, 200, 500]" [pageSize]="100" showFirstLastButtons>
+</mat-paginator>

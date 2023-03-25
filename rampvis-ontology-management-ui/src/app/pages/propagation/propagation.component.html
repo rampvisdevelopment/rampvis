@@ -1,0 +1,362 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <!--
+      Card VIS search
+    -->
+    <div class="card">
+      <div class="card-header card-header-primary card-header-icon">
+        <div class="card-icon">
+          <mat-icon>insert_chart</mat-icon>
+        </div>
+        <h4 class="card-title">Propagation</h4>
+      </div>
+
+      <div class="card-body">
+        <!-- Search vis function form-->
+        <form [formGroup]="ontoVisSearchFormGroup" class="vis-search">
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              [(ngModel)]="searchOntoVisQuery"
+              formControlName="ontoVisSearchQuery"
+              [matAutocomplete]="autoCompVis"
+              placeholder="Search for a visualization function"
+              #input1
+              (keydown.enter)="onClickSearchOntoVis()"
+            />
+            <mat-autocomplete #autoCompVis="matAutocomplete" (optionSelected)="optionSelected(input1)">
+              <mat-option *ngFor="let d of suggestedOntoVis" [value]="d.function">
+                <span [innerHTML]="d.function | highlight: highlightOntoVisSearchSuggestion"></span>
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            class="btn btn-primary"
+            cdkFocusInitial
+            (click)="onClickSearchOntoVis()"
+            type="submit"
+            [disabled]="!ontoVisSearchFormGroup.valid"
+          >
+            Search
+          </button>
+        </form>
+
+        <!-- Example vis table-->
+        <mat-card *ngIf="referenceOntoVis?.length">
+          <mat-card-header>
+            <mat-card-title>Visualization Function</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+          <app-onto-vis-table-b [data]="referenceOntoVis"> </app-onto-vis-table-b>
+        </mat-card>
+
+        <!-- Example data table-->
+        <mat-card *ngIf="referenceOntoData?.length">
+          <mat-card-header>
+            <mat-card-title>Reference Data Streams</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+          <app-onto-data-example
+            [data]="referenceOntoData"
+            [keywordSelectionStateMap]="keywordSelectionStateMap"
+            [datatypeSelectionStateMap]="datatypeSelectionStateMap"
+            (onChangeKeywords)="onChangeKeywords($event)"
+            (onChangeDataTypes)="onChangeDataTypes($event)"
+          >
+          </app-onto-data-example>
+        </mat-card>
+
+        <!-- Example links table-->
+        <!--
+        <mat-card *ngIf="exampleLinks?.length">
+          <mat-card-header>
+            <mat-card-title>Links</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+          <app-onto-page-group [data]="exampleLinks"> </app-onto-page-group>
+        </mat-card>
+        -->
+
+        <mat-accordion>
+          <mat-expansion-panel [expanded]="referenceOntoVis.length > 0 && referenceOntoData.length > 0">
+            <mat-expansion-panel-header>
+              <mat-panel-title> </mat-panel-title>
+              <mat-panel-description> </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-card-header>
+              <mat-card-title>Search Query</mat-card-title>
+              <mat-card-subtitle></mat-card-subtitle>
+            </mat-card-header>
+
+            <!--Data search form-->
+            <div class="row">
+              <div class="col-md-9">
+                <mat-card class="mat-card-data-search">
+                  <form>
+                    <mat-form-field>
+                      <mat-label>Keywords (every stream / must)</mat-label>
+                      <mat-chip-list #keywordChipList1 aria-label="Must have">
+                        <mat-chip
+                          *ngFor="let d of getSelectedKeywords(1)"
+                          [selectable]="false"
+                          [removable]="true"
+                          (removed)="onClickRemoveKeyword(d)"
+                          [ngClass]="
+                            keywordSelectionStateMap[d]?.state
+                              ? 'keyword-select-color-' + keywordSelectionStateMap[d]?.state
+                              : 'keyword-select-color'
+                          "
+                        >
+                          {{ d }}
+                          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+                        </mat-chip>
+                        <input
+                          placeholder="..."
+                          #keywordInput1
+                          [formControl]="keywordInputCtrl1"
+                          [matChipInputFor]="keywordChipList1"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="onEnterAddKeywordMust($event)"
+                        />
+                      </mat-chip-list>
+                    </mat-form-field>
+
+                    <div class="row">
+                      <div class="col-md-10">
+                        <mat-form-field>
+                          <mat-label>Keywords (in group / should)</mat-label>
+                          <mat-chip-list #keywordChipList2 aria-label="May have">
+                            <mat-chip
+                              *ngFor="let d of getSelectedKeywords(2)"
+                              [selectable]="false"
+                              [removable]="true"
+                              (removed)="onClickRemoveKeyword(d)"
+                              [ngClass]="
+                                keywordSelectionStateMap[d]?.state
+                                  ? 'keyword-select-color-' + keywordSelectionStateMap[d]?.state
+                                  : 'keyword-select-color'
+                              "
+                            >
+                              {{ d }}
+                              <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+                            </mat-chip>
+                            <input
+                              placeholder="..."
+                              #keywordInput2
+                              [formControl]="keywordInputCtrl2"
+                              [matChipInputFor]="keywordChipList2"
+                              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                              (matChipInputTokenEnd)="onEnterAddKeywordShould($event)"
+                            />
+                          </mat-chip-list>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-md-2">
+                        <mat-form-field>
+                          <mat-label>Minimum should match</mat-label>
+                          <input matInput placeholder="" [(ngModel)]="minimumShouldMatch" name="minimumShouldMatch" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <mat-form-field>
+                      <mat-label>Keywords (exclude)</mat-label>
+                      <mat-chip-list #keywordChipList3 aria-label="Must not have">
+                        <mat-chip
+                          *ngFor="let d of getSelectedKeywords(3)"
+                          [selectable]="false"
+                          [removable]="true"
+                          (removed)="onClickRemoveKeyword(d)"
+                          [ngClass]="
+                            keywordSelectionStateMap[d]?.state &&
+                            'keyword-select-color-' + keywordSelectionStateMap[d]?.state
+                          "
+                        >
+                          {{ d }}
+                          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+                        </mat-chip>
+                        <input
+                          placeholder="..."
+                          #keywordInput3
+                          [formControl]="keywordInputCtrl3"
+                          [matChipInputFor]="keywordChipList3"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="onEnterAddKeywordMustNot($event)"
+                        />
+                      </mat-chip-list>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Data type (filter)</mat-label>
+                      <mat-chip-list #dataTypeChipList aria-label="Data type">
+                        <mat-chip
+                          *ngFor="let d of getSelectedDataTypes()"
+                          [selectable]="false"
+                          [removable]="true"
+                          (removed)="onClickRemoveDataType(d)"
+                          [ngClass]="datatypeSelectionStateMap[d]?.state && 'datatype-select-color-1'"
+                        >
+                          {{ d }}
+                          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+                        </mat-chip>
+                        <input
+                          placeholder="..."
+                          #dataTypeInput
+                          [formControl]="dataTypeInputCtrl"
+                          [matChipInputFor]="dataTypeChipList"
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          (matChipInputTokenEnd)="onEnterAddDataType($event)"
+                        />
+                      </mat-chip-list>
+                    </mat-form-field>
+
+                    <mat-card-actions align="end">
+                      <button
+                        mat-raised-button
+                        class="btn btn-primary"
+                        cdkFocusInitial
+                        (click)="onClickSearchMatchingGroups()"
+                        type="submit"
+                      >
+                        Search
+                      </button>
+                    </mat-card-actions>
+                  </form>
+                </mat-card>
+              </div>
+              <!--end col-md-9-->
+
+              <div class="col-md-3">
+                <mat-card>
+                  <form>
+                    <label id="cluster-algorithm-group-label">Assign weights for ranking</label>
+                    <table cellspacing="0">
+                      <tr>
+                        <td>
+                          <mat-form-field>
+                            <mat-label>Keyword</mat-label>
+                            <input matInput placeholder="" [(ngModel)]="alpha" name="keywordFieldWeight" />
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field>
+                            <mat-label>Description</mat-label>
+                            <input matInput placeholder="" [(ngModel)]="beta" name="descriptionFieldWeight" />
+                          </mat-form-field>
+                        </td>
+                        <td>
+                          <mat-form-field>
+                            <mat-label>Endpoint</mat-label>
+                            <input matInput placeholder="" [(ngModel)]="theta" name="endpointFieldWeight" />
+                          </mat-form-field>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <label id="cluster-algorithm-group-label">Select a grouping algorithm</label>
+                    <mat-radio-group
+                      aria-labelledby="example-radio-group-label"
+                      class="cluster-algorithm-radio-group"
+                      [(ngModel)]="selectedAlgorithm"
+                      name="algorithm"
+                    >
+                      <mat-radio-button
+                        class="cluster-algorithm-radio-button"
+                        *ngFor="let d of allAlgorithms"
+                        [value]="d"
+                        (change)="onAlgorithmRadioChange($event)"
+                      >
+                        {{ d }}
+                      </mat-radio-button>
+                    </mat-radio-group>
+
+                    <table cellspacing="0">
+                      <tr>
+                        <td>
+                          <label id="cluster-algorithm-group-label">Hardware</label>
+                          <mat-radio-group
+                            aria-labelledby="example-radio-group-label"
+                            class="cluster-algorithm-radio-group"
+                            [(ngModel)]="selectedProcessor"
+                            name="processor"
+                          >
+                            <mat-radio-button
+                              class="cluster-algorithm-radio-button"
+                              *ngFor="let d of allProcessor"
+                              [value]="d"
+                              (change)="onProcessorRadioChange($event)"
+                            >
+                              {{ d }}
+                            </mat-radio-button>
+                          </mat-radio-group>
+                        </td>
+
+                        <td>
+                          <mat-form-field>
+                            <mat-label>Maximum search window</mat-label>
+                            <input matInput placeholder="" [(ngModel)]="maxSearchWindow" name="maxSearchWindow" />
+                          </mat-form-field>
+                        </td>
+                      </tr>
+                    </table>
+                  </form>
+                </mat-card>
+              </div>
+            </div>
+            <!--End- Data search form-->
+          </mat-expansion-panel>
+        </mat-accordion>
+
+        <!-- Propagate all  button -->
+        <div class="row">
+          <div class="col-md-1 offset-md-11">
+            <button mat-raised-button class="btn btn-warning float-right" (click)="onClickPropagateAll()">
+              Propagate x 100
+            </button>
+          </div>
+        </div>
+
+        <mat-card *ngIf="discoveredOntoDataGroups?.length">
+          <mat-card-header>
+            <mat-card-title>Discovered Data Streams</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+          <app-onto-data-matched-table
+            [data]="discoveredOntoDataGroups"
+            (onClickPropagate)="onClickPropagate($event)"
+            (onClickRemove)="onClickRemove($event)"
+          >
+          </app-onto-data-matched-table>
+        </mat-card>
+
+        <!-- Links page table -->
+        <!--
+        <mat-card *ngIf="ontoPageExtSearchGroups?.length">
+          <mat-card-header>
+            <mat-card-title>Links</mat-card-title>
+            <mat-card-subtitle></mat-card-subtitle>
+          </mat-card-header>
+          <app-onto-page-ext-group-table
+            [data]="ontoPageExtSearchGroups"
+            (onClickPropagate)="onClickPropagateOntoDataSearchGroup($event)"
+            (onClickRemove)="onClickRemoveOntoDataSearchGroup($event)"
+          >
+          </app-onto-page-ext-group-table>
+        </mat-card>
+        -->
+      </div>
+    </div>
+
+    <!--End- Card search data-->
+  </div>
+
+  <!-- set loaderId to something that is different from "master" -->
+  <ngx-ui-loader></ngx-ui-loader>
+
+  <!--End container-fluid-->
+</div>
+<!--End main-content-->

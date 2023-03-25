@@ -1,0 +1,189 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "../node_modules/ag-grid-community/src/styles/ag-grid.scss";
+@import "../node_modules/ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine-mixin.scss";
+@import "./assets/scss/material-dashboard.scss";
+
+//
+// Change checkbox background from default pink to primary
+//
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $hart-primary;
+}
+
+//
+// ng-select
+//
+@import "~@ng-select/ng-select/themes/material.theme.css";
+/* Override primary background color of ng-select */
+.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
+  background-color: $hart-primary;
+  border-radius: 10px;
+}
+
+//
+// Table
+//
+table {
+  width: 100%;
+
+  th.actions {
+    width: 100px;
+  }
+}
+
+.th-center {
+  text-align: center;
+}
+
+.th-left {
+  text-align: left;
+}
+
+.th-right {
+  text-align: right;
+}
+
+//
+// Used by search data highlight pipe
+//
+.search-highlight {
+  // color: $hart-primary;
+  font-weight: bold;
+}
+
+//
+// Chips
+//
+mat-chip-list {
+  mat-chip {
+    padding: 3px 7px !important;
+    min-height: 20px !important;
+    margin: 4px 2px !important;
+    color: #555555 !important;
+    font-weight: 400 !important;
+    font-size: 0.8em !important;
+  }
+}
+
+
+//
+// Chip color used for keyword and data type selection state change
+//
+
+.keyword-select-color-1 {
+  background-color: #57B440 !important;
+  color: black !important;
+}
+
+.keyword-select-color-2 {
+  background-color: #A7D49C !important;
+  color: black !important;
+}
+
+.keyword-select-color-3 {
+  background-color: white !important;
+  border: 1px solid #dc6268 !important;
+  color: #dc6268 !important;
+}
+
+.datatype-select-color-1 {
+  background-color: #8FA8E7 !important;
+  color: black !important;
+}
+
+.keyword-match-color-1 {
+  background-color: #57B440 !important;
+  color: black !important;
+}
+
+.keyword-match-color-2 {
+  background-color: #A7D49C !important;
+  color: black !important;
+}
+
+.keyword-match-color-3 {
+  color: #361999 !important;
+}
+
+// .keyword-nomatch-color {
+//   background-color: #f0f0f0 !important;
+//   color: darkgrey !important;
+// }
+
+.datatype-match-color {
+  background-color: #8FA8E7 !important;
+  color: black !important;
+}
+
+.datatype-nomatch-color {
+  // color: #dc6268 !important;
+}
+
+//
+//  Other
+//
+
+/* Align horizontally and centred */
+.align-centered-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+}
+
+//
+// Not used
+//
+
+/* Text inside a colored dot. This is not good enough */
+.text-in-dot {
+  width: 100%;
+  display: inline-block;
+  flex-direction: row;
+  justify-content: center;
+
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  padding: 0px;
+
+  background: #fff;
+  // border: 2px solid #666;
+  // color: #666;
+  text-align: center;
+  color: white;
+
+  // font: 15px Arial, sans-serif;
+}
+
+//
+// TODO Check if they are used?
+//
+.ag-theme-alpine {
+  @include ag-theme-alpine();
+}
+
+.angular-list-grid {
+  width: 100%;
+  height: 235px;
+}
+
+.z-index-max {
+  z-index: 99999 !important;
+}
+
+.cdk-overlay-connected-position-bounding-box {
+  z-index: 9999 !important;
+}
+.mat-dialog-content {
+  display: inline !important;
+}
+.cdk-global-scrollblock {
+  overflow: hidden !important;
+}
+.cdk-global-overlay-wrapper {
+  overflow-y: scroll !important;
+  pointer-events: all !important;
+}

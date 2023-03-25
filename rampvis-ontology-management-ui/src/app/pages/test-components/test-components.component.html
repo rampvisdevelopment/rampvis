@@ -1,0 +1,338 @@
+<div class="main-content dashboard-wrap">
+  <div class="container-fluid page-wrap">
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <!--
+       Chip color state experiment
+    -->
+    <h2>Experiment with chips</h2>
+    <h3>Example</h3>
+
+    <mat-chip-list #chipList aria-label="Fruit selection">
+      <mat-chip
+        *ngFor="let d of kwList1"
+        [selectable]="true"
+        [removable]="false"
+        (click)="onClickChip(d)"
+        [ngClass]="'chip-state-color-' + kwSelectionMap[d]?.state"
+      >
+        {{ d }}
+        <mat-icon matChipTrailingIcon>chevron_right</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+
+    <mat-chip-list #chipList aria-label="Fruit selection">
+      <mat-chip
+        *ngFor="let d of kwList2"
+        [selectable]="true"
+        [removable]="false"
+        (click)="onClickChip(d)"
+        [ngClass]="'chip-state-color-' + kwSelectionMap[d]?.state"
+      >
+        {{ d }}
+        <mat-icon matChipTrailingIcon>chevron_right</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+
+    <h3>Query</h3>
+
+
+    <mat-form-field class="example-chip-list">
+      <mat-label>Must</mat-label>
+      <mat-chip-list #chipList aria-label="Must keywords selection">
+        <mat-chip
+          *ngFor="let d of mustChipList"
+          [selectable]="false"
+          [removable]="true"
+          (removed)="onClickRemoveChip(d)"
+          [ngClass]="'chip-state-color-' + kwSelectionMap[d]?.state"
+        >
+          {{ d }}
+          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+        </mat-chip>
+        <input
+          placeholder="..."
+          #kwInput
+          [formControl]="keywordsCtrl"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipList"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="onEnterAddChip($event)"
+        />
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectedChip($event)">
+        <mat-option *ngFor="let d of filteredKeywords | async" [value]="d">
+          {{ d }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+
+
+    <mat-form-field class="example-chip-list">
+      <mat-label>Should</mat-label>
+      <mat-chip-list #chipList aria-label="Should keywords selection">
+        <mat-chip
+          *ngFor="let d of shouldChipList"
+          [selectable]="false"
+          [removable]="true"
+          (removed)="onClickRemoveChip(d)"
+          [ngClass]="'chip-state-color-' + kwSelectionMap[d]?.state"
+        >
+          {{ d }}
+          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+        </mat-chip>
+        <input
+          placeholder="..."
+          #kwInput
+          [formControl]="shouldKeywordsCtrl"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipList"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="onClickAddChip($event)"
+        />
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectedChip($event)">
+        <mat-option *ngFor="let d of filteredKeywords | async" [value]="d">
+          {{ d }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+
+    <mat-form-field class="example-chip-list">
+      <mat-label>Must Not</mat-label>
+      <mat-chip-list #chipList aria-label="Must not keywords selection">
+        <mat-chip
+          *ngFor="let d of mustNotChipList"
+          [selectable]="false"
+          [removable]="true"
+          (removed)="onClickRemoveChip(d)"
+          [ngClass]="kwSelectionMap[d]?.state ? 'chip-state-color-' + kwSelectionMap[d]?.state : 'chip-state-color-0'"
+        >
+          {{ d }}
+          <mat-icon matChipRemove *ngIf="true">cancel</mat-icon>
+        </mat-chip>
+        <input
+          placeholder="..."
+          #kwInput
+          [formControl]="mustNotKeywordsCtrl"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipList"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="onClickAddChip($event)"
+        />
+      </mat-chip-list>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectedChip($event)">
+        <mat-option *ngFor="let d of filteredKeywords | async" [value]="d">
+          {{ d }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+
+
+    <h2>Multiple drag and drop table experiment</h2>
+
+    <div class="row">
+      <!--
+        Begin - Multiple drag and drop table experiment
+      -->
+
+      <mat-table
+        [dataSource]="dataSource"
+        class="mat-elevation-z8"
+        cdkDropList
+        #table1
+        #list1="cdkDropList"
+        [cdkDropListData]="dataSource.data"
+        [cdkDropListConnectedTo]="[list2]"
+        (cdkDropListDropped)="drop($event)"
+        id="table1"
+      >
+        <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.position }} </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="weight">
+          <mat-header-cell *matHeaderCellDef> Weight </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.weight }} </mat-cell>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="symbol">
+          <mat-header-cell *matHeaderCellDef> Symbol </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.symbol }} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns" cdkDrag></mat-row>
+      </mat-table>
+
+      <p style="margin-bottom: 1cm">-</p>
+
+      <mat-table
+        [dataSource]="dataSource2"
+        class="mat-elevation-z8"
+        cdkDropList
+        #table2
+        #list2="cdkDropList"
+        [cdkDropListData]="dataSource2.data"
+        (cdkDropListDropped)="drop($event)"
+        id="table2"
+      >
+        <!--- Note that these columns can be defined in any order.
+        The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.position }} </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="weight">
+          <mat-header-cell *matHeaderCellDef> Weight </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.weight }} </mat-cell>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="symbol">
+          <mat-header-cell *matHeaderCellDef> Symbol </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.symbol }} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns" cdkDrag></mat-row>
+      </mat-table>
+
+      <!-- End- Multiple drag and drop table experiment-->
+    </div>
+
+    <!--
+
+      End - Multiple drag and drop table experiment
+
+    -->
+
+    <!--
+
+      Begin - Test custom single selection
+
+    -->
+
+    <h2>Test custom single selection</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <form [formGroup]="formGroup">
+          <mat-form-field>
+            <!--custom single selection-->
+            <app-custom-single-selection
+              [data]="data$ | async"
+              formControlName="visId"
+              placeholder="Select VIS function"
+              placeholderLabel="Search VIS function..."
+              (onSelectId)="onSelectOntoVis($event)"
+            >
+            </app-custom-single-selection>
+          </mat-form-field>
+        </form>
+        <pre>{{ formGroup.value | json }}</pre>
+      </div>
+      <!--
+
+      End - Test custom single selection
+
+      -->
+    </div>
+
+    <!--
+
+      Begin - Search data, add to basket
+    -->
+
+    <h2>Search data, add to basket</h2>
+
+    <form [formGroup]="ontoDataSearchFormGroup">
+      <div class="row align-centered-flex">
+        <div class="pull-left col-md-1">
+          <mat-form-field>
+            <mat-select formControlName="ontoDataSearchDataType" placeholder="Data Type">
+              <mat-option [value]="null"></mat-option>
+              <mat-option *ngFor="let d of dataTypes" [value]="d">{{ d }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-divider [vertical]="true" class="divider"></mat-divider>
+
+        <div class="pull-left col-md-4 d-flex">
+          <mat-form-field>
+            <input
+              matInput
+              type="text"
+              formControlName="ontoDataSearchQuery"
+              [matAutocomplete]="auto"
+              placeholder="Search data streams"
+              #input
+              (keydown.enter)="onClickSearchOntoData()"
+            />
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected(input)">
+              <mat-option *ngFor="let d of suggestedOntoData" [value]="d.description + ' ' + d.keywords.join(', ')">
+                <span [innerHTML]="d.description | highlight: highlightOntoDataSearchSuggestion"></span>
+                <b> | </b>
+                <span [innerHTML]="d.keywords.join(', ') | highlight: highlightOntoDataSearchSuggestion"></span>
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <button
+            (click)="onClickSearchOntoData()"
+            [disabled]="!ontoDataSearchFormGroup.valid"
+            class="btn btn-primary btn-round btn-fab float-right card-btn"
+            type="submit"
+          >
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <app-onto-data-search-table
+      [data]="ontoDataSearchResult"
+      [length]="ontoDataSearchResultTotalCount"
+      [searchable]="true"
+      [selectable]="false"
+      [showBindings]="true"
+      [canAddToBasket]="true"
+      (onClickAddToBasket)="addOntoDataToBasket($event)"
+    >
+    </app-onto-data-search-table>
+
+    <app-onto-data-group [data]="ontoDataBasket" [add]="addData" [editBasket]="true"> </app-onto-data-group>
+
+    <!--
+
+      End - Search data, add to basket
+
+    -->
+  </div>
+</div>
